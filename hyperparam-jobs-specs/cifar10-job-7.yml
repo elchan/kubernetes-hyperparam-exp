@@ -29,13 +29,13 @@ spec:
       volumes:
       - name: cifar10-training
         gitRepo:
-          repository: https://github.com/NVIDIA-developer-blog/kubernetes-hyperparam-exp.git
+          repository: https://github.com/elchan/kubernetes-hyperparam-exp.git
           revision: master
           directory: .
       - name: cifar10-dataset
         nfs:
-          server: 10.110.114.22
-          path: /home/sprasanna/Projects/training-datasets
+          server: 10.33.15.158
+          path: /products/nfsroot/cifardata
       computeResources:
        - name: "nvidia-gpu"
          resources:
