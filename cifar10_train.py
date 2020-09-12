@@ -106,8 +106,8 @@ def main():
     f.write("{} model".format(job_id))
 
     # print('Warming up cudnn on random inputs')
-    for size in [batch_size, len(test_set_raw) % batch_size]:
-        warmup_cudnn(model, size)
+    #for size in [batch_size, len(test_set_raw) % batch_size]:
+    #    warmup_cudnn(model, size)
 
     f.write("{} cudnn".format(job_id))
     
@@ -122,14 +122,13 @@ def main():
           batch_size=batch_size, loggers=(TableLogger(), TSV), timer=t, test_time_in_total=False, drop_last=True)
 
     f.write("{} train".format(job_id))
+    f.close()
         
     with open('/datasets/results_job_id_'+str(job_id)+'.log', 'w') as csvfile:
         cw = csv.writer(csvfile, delimiter=',')
         for key, val in summary.items():
             cw.writerow([key, val])    
 
-    f.write("{} results".format(job_id))
-    f.close()
        
 if __name__ == '__main__':
     main()
