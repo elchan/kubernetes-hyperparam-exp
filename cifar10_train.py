@@ -76,17 +76,20 @@ def main():
     job_id = int(os.environ['JOB_ID'])
     DATA_DIR = '/datasets/cifar10-data'
 
-    f = open(DATA_DIR+"/output.txt")
+    f = open(DATA_DIR+"/output.txt",'a')
     f.write("Ellison {} was here!".format(job_id))
-    f.close()
 
     #print('Downloading datasets')
     train_set_raw = torchvision.datasets.CIFAR10(root=DATA_DIR, train=True, download=False)
     test_set_raw = torchvision.datasets.CIFAR10(root=DATA_DIR, train=False, download=False)
     
+    f.write("{} Download data".format(job_id))
+
     # Load hyperparameters
     hyperparams = get_hyperparameters(job_id)
     
+    f.write("{} hyperparameters {}".format(job_id, hyperparams))
+
     max_learning_rate = hyperparams["max_learning_rate"]
     data_aug_cutout_size = hyperparams["data_aug_cutout_size"]
     batch_size = hyperparams["batch_size"]
@@ -94,13 +97,19 @@ def main():
     use_bn = hyperparams["batch_norm"]
     
     lr_schedule = PiecewiseLinear([0, 5, 24], [0, max_learning_rate, 0])
+
+    f.write("{} schedule".format(job_id))
     
     model = TorchGraph(union(net(use_bn=use_bn), losses)).to(device).half()
     opt = nesterov(trainable_params(model), momentum=momentum, weight_decay=5e-4*batch_size)
         
+    f.write("{} model".format(job_id))
+
     # print('Warming up cudnn on random inputs')
     for size in [batch_size, len(test_set_raw) % batch_size]:
         warmup_cudnn(model, size)
+
+    f.write("{} cudnn".format(job_id))
     
     t = Timer()
     train_set = list(zip(transpose(normalise(pad(train_set_raw.train_data, 4))), train_set_raw.train_labels))
@@ -111,11 +120,16 @@ def main():
     train_set_aug = Transform(train_set, [Crop(32, 32), FlipLR(), Cutout(data_aug_cutout_size, data_aug_cutout_size)])
     summary = train(model, lr_schedule, opt, train_set_aug, test_set, 
           batch_size=batch_size, loggers=(TableLogger(), TSV), timer=t, test_time_in_total=False, drop_last=True)
+
+    f.write("{} train".format(job_id))
         
     with open('/datasets/results_job_id_'+str(job_id)+'.log', 'w') as csvfile:
         cw = csv.writer(csvfile, delimiter=',')
         for key, val in summary.items():
             cw.writerow([key, val])    
+
+    f.write("{} results".format(job_id))
+    f.close()
        
 if __name__ == '__main__':
     main()
