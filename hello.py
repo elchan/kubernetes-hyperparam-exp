@@ -1,6 +1,5 @@
 from utils import *
 
-def main()
 def main():
     job_id = int(os.environ['JOB_ID'])
     DATA_DIR = '/datasets/cifar10-data'
