@@ -115,19 +115,23 @@ def main():
     train_set = list(zip(transpose(normalise(pad(train_set_raw.train_data, 4))), train_set_raw.train_labels))
     test_set = list(zip(transpose(normalise(test_set_raw.test_data)), test_set_raw.test_labels))
 
+    f.write("{} list\n".format(job_id))
     TSV = TSVLogger()
     
+    f.write("{} before train\n".format(job_id))
     train_set_aug = Transform(train_set, [Crop(32, 32), FlipLR(), Cutout(data_aug_cutout_size, data_aug_cutout_size)])
     summary = train(model, lr_schedule, opt, train_set_aug, test_set, 
           batch_size=batch_size, loggers=(TableLogger(), TSV), timer=t, test_time_in_total=False, drop_last=True)
 
     f.write("{} train\n".format(job_id))
-    f.close()
         
     with open('/datasets/results_job_id_'+str(job_id)+'.log', 'w') as csvfile:
         cw = csv.writer(csvfile, delimiter=',')
         for key, val in summary.items():
             cw.writerow([key, val])    
+    
+    f.write("{} output\n".format(job_id))
+    f.close()
 
        
 if __name__ == '__main__':
