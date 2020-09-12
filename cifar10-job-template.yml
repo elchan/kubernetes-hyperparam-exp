@@ -19,7 +19,8 @@ spec:
          - name: JOB_ID
            value: "$ITEM"
          command: ["bash"]
-         args: ["-c","python cifar10_train.py"]
+         #args: ["-c","python cifar10_train.py"]
+         args: ["-c","python hello.py"]
 #         computeResourceRequests: ["nvidia-gpu"]
          volumeMounts:
          - name: cifar10-training

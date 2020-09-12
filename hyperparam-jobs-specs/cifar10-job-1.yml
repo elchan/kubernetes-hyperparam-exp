@@ -20,7 +20,7 @@ spec:
            value: "1"
          command: ["bash"]
          args: ["-c","python cifar10_train.py"]
-         computeResourceRequests: ["nvidia-gpu"]
+#         computeResourceRequests: ["nvidia-gpu"]
          volumeMounts:
          - name: cifar10-training
            mountPath: /cifar10-training
@@ -36,8 +36,8 @@ spec:
         nfs:
           server: 10.33.15.158
           path: /products/nfsroot/cifardata
-      computeResources:
-       - name: "nvidia-gpu"
-         resources:
-           limits:
-             nvidia.com/gpu: 1
+#      computeResources:
+#       - name: "nvidia-gpu"
+#         resources:
+#           limits:
+#             nvidia.com/gpu: 1
